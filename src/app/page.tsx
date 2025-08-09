@@ -1,33 +1,37 @@
-import Link from 'next/link';
+"use client";
+
+import { useRouter } from "next/navigation";
+import { ClipboardList, BarChart3 } from "lucide-react";
 
 export default function Home() {
+  const router = useRouter();
+
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="max-w-md mx-auto p-8">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Sistema de Interconsultas
-          </h1>
-          <p className="text-gray-600">
-            Seleccione una opción para continuar
-          </p>
-        </div>
-        
-        <div className="space-y-4">
-          <Link 
-            href="/formulario"
-            className="w-full bg-blue-600 text-white py-4 px-6 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition-all duration-200 font-semibold text-lg shadow-lg block text-center"
-          >
-            Nuevo Formulario
-          </Link>
-          
-          <Link 
-            href="/dashboard"
-            className="w-full bg-green-600 text-white py-4 px-6 rounded-lg hover:bg-green-700 focus:ring-4 focus:ring-green-300 transition-all duration-200 font-semibold text-lg shadow-lg block text-center"
-          >
-            Dashboard
-          </Link>
-        </div>
+    <div className="flex flex-col items-center justify-center min-h-screen text-center px-6 bg-gradient-to-br from-blue-50 to-blue-100">
+      <h1 className="text-5xl font-extrabold mb-6 text-blue-800 drop-shadow-sm">
+        Sistema de Gestión de Pacientes
+      </h1>
+      <p className="mb-12 text-lg text-gray-700 max-w-lg">
+        Bienvenido al sistema de registro y monitoreo de pacientes. 
+        Selecciona una opción para continuar.
+      </p>
+
+      <div className="flex flex-col gap-6 w-full max-w-xs">
+        <button
+          onClick={() => router.push("/formulario")}
+          className="flex items-center justify-center gap-3 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white py-4 px-6 rounded-2xl shadow-lg transform transition hover:scale-105 active:scale-95"
+        >
+          <ClipboardList className="w-6 h-6" />
+          <span className="text-lg font-semibold">Ir al Formulario</span>
+        </button>
+
+        <button
+          onClick={() => router.push("/dashboard")}
+          className="flex items-center justify-center gap-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white py-4 px-6 rounded-2xl shadow-lg transform transition hover:scale-105 active:scale-95"
+        >
+          <BarChart3 className="w-6 h-6" />
+          <span className="text-lg font-semibold">Ir al Dashboard</span>
+        </button>
       </div>
     </div>
   );
