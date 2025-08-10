@@ -14,6 +14,12 @@ interface FormData {
 }
 
 export default function InterconsultaForm() {
+  const [logs, setLogs] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
+  const addLog = (message: string) => {
+    setLogs(prev => [...prev, `${new Date().toLocaleTimeString()}: ${message}`]);
+  };
+
   const [formData, setFormData] = useState<FormData>({
     rut: "",
     nombre: "",
@@ -35,10 +41,42 @@ export default function InterconsultaForm() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Datos en JSON:", JSON.stringify(formData, null, 2));
-    alert("JSON generado en consola");
+    setLoading(true);
+    setLogs([]);
+
+    try{
+    addLog('📤 Enviando request...');
+      
+      const response = await fetch('/api/interconsultas/procesar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      addLog(`📊 Status recibido: ${response.status}`);
+      
+      const text = await response.text();
+      addLog(`📝 Response raw: ${text}`);
+
+      try {
+        const data = JSON.parse(text);
+        if (response.ok) {
+          addLog(`✅ Éxito! ID generado: ${data.data?.id_interconsulta || 'N/A'}`);
+        } else {
+          addLog(`❌ Error ${response.status}: ${data.error || text}`);
+        }
+      } catch (parseError) {
+        addLog(`⚠️ Error parseando JSON: ${parseError.message}`);
+        addLog(`📦 Contenido original: ${text}`);
+      }
+
+    } catch (error: any) {
+      addLog(`💥 Exception: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
