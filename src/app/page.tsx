@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { ClipboardList, BarChart3, AlertTriangle, Target, Lightbulb } from "lucide-react";
+import Footer from "./components/Footer";
 
 export default function Home() {
   const router = useRouter();
@@ -134,6 +135,8 @@ export default function Home() {
 
         </div>
       </div>
+      
+      <Footer />
     </div>
   );
 }

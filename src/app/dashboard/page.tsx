@@ -17,12 +17,12 @@ const InterConsultaCard = ({ interconsulta, isExpanded, onToggle }) => {
 
   const getPriorityColor = (prioridad) => {
     switch (prioridad) {
-      case 'Urgente': return 'bg-red-100 text-red-800 border-red-200';
-      case 'Media': return 'bg-green-100 text-green-800 border-green-200';
-      case 'Preferente': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'Prioritario': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'Electivo': return 'bg-green-100 text-green-800 border-green-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'Urgente': return 'bg-red-100 text-red-700 border-red-300 shadow-sm';
+      case 'Media': return 'bg-teal-100 text-teal-700 border-teal-300 shadow-sm';
+      case 'Preferente': return 'bg-amber-100 text-amber-700 border-amber-300 shadow-sm';
+      case 'Prioritario': return 'bg-orange-100 text-orange-700 border-orange-300 shadow-sm';
+      case 'Electivo': return 'bg-emerald-100 text-emerald-700 border-emerald-300 shadow-sm';
+      default: return 'bg-gray-100 text-gray-700 border-gray-300 shadow-sm';
     }
   };
 
@@ -37,7 +37,7 @@ const InterConsultaCard = ({ interconsulta, isExpanded, onToggle }) => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md border border-gray-200 mb-4 overflow-hidden transition-all duration-200 hover:shadow-lg">
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-3 overflow-hidden transition-all duration-200 hover:shadow-md hover:border-gray-300">
       {/* Header - Siempre visible */}
       <div 
         className="p-4 cursor-pointer hover:bg-gray-50 transition-colors duration-150"
@@ -45,8 +45,8 @@ const InterConsultaCard = ({ interconsulta, isExpanded, onToggle }) => {
       >
         <div className="flex justify-between items-start">
           <div className="flex-1">
-            <div className="flex items-center gap-3 mb-2">
-              <h3 className="text-lg font-semibold text-gray-900">
+            <div className="flex items-center gap-3 mb-2 flex-wrap">
+              <h3 className="text-lg font-semibold text-gray-900 break-words">
                 {diagnostico_estandarizado?.codigo_cie10} - {diagnostico_estandarizado?.descripcion}
               </h3>
               <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getPriorityColor(diagnostico_estandarizado?.nivel_prioridad)}`}>
@@ -54,7 +54,7 @@ const InterConsultaCard = ({ interconsulta, isExpanded, onToggle }) => {
               </span>
             </div>
             
-            <div className="flex items-center gap-4 text-sm text-gray-600 mb-2">
+            <div className="flex items-center gap-4 text-sm text-gray-600 mb-2 flex-wrap">
               <div className="flex items-center gap-1">
                 <span className="font-medium">{id_interconsulta}</span>
               </div>
@@ -95,7 +95,7 @@ const InterConsultaCard = ({ interconsulta, isExpanded, onToggle }) => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <h4 className="font-medium text-gray-900 mb-2">Información del Paciente</h4>
-              <div className="space-y-1 text-sm">
+              <div className="text-gray-700 space-y-1 text-sm">
                 <p><span className="font-medium">RUT:</span> {formulario_original?.rut}</p>
                 <p><span className="font-medium">Edad:</span> {formulario_original?.edad} años</p>
                 <p><span className="font-medium">Sexo:</span> {formulario_original?.sexo}</p>
@@ -144,9 +144,8 @@ const InterConsultasDashboard = () => {
           throw new Error(`Error ${response.status}: ${response.statusText}`);
         }
         const data = await response.json();
-        console.log('Datos recibidos:', data); // Para debug
+        console.log('Datos recibidos:', data);
         
-        // Validar que data es un array
         if (!Array.isArray(data)) {
           throw new Error('Los datos recibidos no son un array válido');
         }
@@ -254,16 +253,20 @@ const InterConsultasDashboard = () => {
       setFiltroEspecialidad('');
     } else {
       setFiltroEspecialidad(especialidad);
-      setFiltroCIE10(''); // Limpiar el otro filtro
+      setFiltroCIE10('');
     }
   };
 
   if (loading) {
     return (
-      <div className="max-w-7xl mx-auto p-6 bg-gray-100 min-h-screen flex justify-center items-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Cargando interconsultas...</p>
+      <div className="min-h-screen bg-white">
+        <div className="max-w-7xl mx-auto p-4 sm:p-6">
+          <div className="flex justify-center items-center min-h-[60vh]">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+              <p className="text-gray-600">Cargando interconsultas...</p>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -271,184 +274,216 @@ const InterConsultasDashboard = () => {
 
   if (error) {
     return (
-      <div className="max-w-7xl mx-auto p-6 bg-gray-100 min-h-screen flex justify-center items-center">
-        <div className="text-center">
-          <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Error al cargar datos</h3>
-          <p className="text-gray-600">{error}</p>
-          <button 
-            onClick={() => window.location.reload()}
-            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
-          >
-            Reintentar
-          </button>
+      <div className="min-h-screen bg-white">
+        <div className="max-w-7xl mx-auto p-4 sm:p-6">
+          <div className="flex justify-center items-center min-h-[60vh]">
+            <div className="text-center">
+              <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">Error al cargar datos</h3>
+              <p className="text-gray-600 mb-4">{error}</p>
+              <button 
+                onClick={() => window.location.reload()}
+                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+              >
+                Reintentar
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto p-6 bg-gray-100 min-h-screen">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard de Interconsultas</h1>
-        <p className="text-gray-600">Gestión y seguimiento de interconsultas médicas</p>
-      </div>
+    <div className="min-h-screen bg-gradient-to-b from-green-100 via-teal-50 to-cyan-50">
+      <div className="max-w-7xl mx-auto p-4 sm:p-6">
+        <div className="mb-8 relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-teal-500/10 to-emerald-500/10 rounded-2xl"></div>
+          <div className="relative bg-white/90 backdrop-blur-sm rounded-2xl p-6 border border-teal-200 shadow-lg">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-teal-500 to-emerald-500 rounded-xl flex items-center justify-center">
+                <Stethoscope className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-2">
+                  Dashboard de Interconsultas
+                </h1>
+                <p className="text-teal-700">Sistema de gestión médica especializada</p>
+              </div>
+            </div>
+          </div>
+        </div>
 
-      {/* Dashboard de estadísticas por especialidad */}
-      {estadisticasEspecialidad.length > 0 && (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Resumen por Especialidad</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {estadisticasEspecialidad.map(({ especialidad, cantidad }) => {
-              const totalPorcentaje = interconsultasData.length > 0 
-                ? ((cantidad / interconsultasData.length) * 100).toFixed(1)
-                : '0.0';
-              const isSelected = filtroEspecialidad === especialidad;
-              
-              return (
-                <div 
-                  key={especialidad}
-                  className={`p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 hover:shadow-md ${
-                    isSelected 
-                      ? 'border-blue-500 bg-blue-50' 
-                      : 'border-gray-200 bg-gray-50 hover:border-gray-300'
-                  }`}
-                  onClick={() => handleEspecialidadClick(especialidad)}
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      {getSpecialtyIcon(especialidad)}
-                      <span className="text-sm font-medium text-gray-600 truncate">
-                        {especialidad}
+        {/* Dashboard de estadísticas por especialidad */}
+        {estadisticasEspecialidad.length > 0 && (
+          <div className="bg-white rounded-xl shadow-lg border border-teal-100 p-4 sm:p-6 mb-6 hover:shadow-xl transition-all duration-300">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">Resumen por Especialidad</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {estadisticasEspecialidad.map(({ especialidad, cantidad }) => {
+                const totalPorcentaje = interconsultasData.length > 0 
+                  ? ((cantidad / interconsultasData.length) * 100).toFixed(1)
+                  : '0.0';
+                const isSelected = filtroEspecialidad === especialidad;
+                
+                return (
+                  <div 
+                    key={especialidad}
+                    className={`p-5 rounded-xl border-2 cursor-pointer transition-all duration-300 hover:shadow-lg ${
+                      isSelected 
+                        ? 'border-teal-400 bg-gradient-to-br from-teal-50 to-emerald-50 shadow-md' 
+                        : 'border-gray-200 bg-white hover:border-teal-200 hover:bg-teal-25'
+                    }`}
+                    onClick={() => handleEspecialidadClick(especialidad)}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2 min-w-0">
+                        {getSpecialtyIcon(especialidad)}
+                        <span className="text-sm font-medium text-gray-600 truncate">
+                          {especialidad}
+                        </span>
+                      </div>
+                      {isSelected && (
+                        <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></div>
+                      )}
+                    </div>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-xl sm:text-2xl font-bold text-gray-900">
+                        {cantidad}
+                      </span>
+                      <span className="text-sm text-gray-500">
+                        ({totalPorcentaje}%)
                       </span>
                     </div>
-                    {isSelected && (
-                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                    )}
+                    <div className="mt-2 w-full bg-gray-200 rounded-full h-1">
+                      <div 
+                        className={`h-1 rounded-full transition-all duration-300 ${
+                          isSelected ? 'bg-blue-500' : 'bg-blue-400'
+                        }`}
+                        style={{ width: `${Math.min(parseFloat(totalPorcentaje), 100)}%` }}
+                      ></div>
+                    </div>
                   </div>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-2xl font-bold text-gray-900">
-                      {cantidad}
-                    </span>
-                    <span className="text-sm text-gray-500">
-                      ({totalPorcentaje}%)
-                    </span>
-                  </div>
-                  <div className="mt-2 w-full bg-gray-200 rounded-full h-1">
-                    <div 
-                      className={`h-1 rounded-full transition-all duration-300 ${
-                        isSelected ? 'bg-blue-500' : 'bg-blue-400'
-                      }`}
-                      style={{ width: `${Math.min(parseFloat(totalPorcentaje), 100)}%` }}
-                    ></div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-          
-          <div className="mt-4 flex justify-between items-center text-sm text-gray-600">
-            <span>Total de interconsultas: <span className="font-semibold">{interconsultasData.length}</span></span>
-            {filtroEspecialidad && (
-              <span className="text-blue-600">
-                Filtrando por: <span className="font-semibold">{filtroEspecialidad}</span>
-              </span>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Filtros */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Filtros</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Especialidad Derivada
-            </label>
-            <select
-              value={filtroEspecialidad}
-              onChange={(e) => setFiltroEspecialidad(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="">Todas las especialidades</option>
-              {especialidades.map(esp => (
-                <option key={esp} value={esp}>{esp}</option>
-              ))}
-            </select>
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Código CIE-10
-            </label>
-            <select
-              value={filtroCIE10}
-              onChange={(e) => setFiltroCIE10(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="">Todos los códigos</option>
-              {codigosCIE10.map(item => (
-                <option key={item.codigo} value={item.codigo}>
-                  {item.codigo} - {item.descripcion}
-                </option>
-              ))}
-            </select>
-          </div>
-          
-          <div className="flex items-end">
-            <button
-              onClick={limpiarFiltros}
-              className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors duration-150"
-            >
-              Limpiar Filtros
-            </button>
-          </div>
-        </div>
-        
-        <div className="mt-4 text-sm text-gray-600">
-          Mostrando {datosFiltrados.length} de {interconsultasData.length} interconsultas
-        </div>
-      </div>
-
-      {/* Lista de interconsultas */}
-      <div className="space-y-4">
-        {datosFiltrados.length > 0 ? (
-          datosFiltrados.map(interconsulta => (
-            <InterConsultaCard
-              key={interconsulta._id}
-              interconsulta={interconsulta}
-              isExpanded={expandedCards.has(interconsulta._id)}
-              onToggle={() => toggleCard(interconsulta._id)}
-            />
-          ))
-        ) : interconsultasData.length > 0 ? (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
-            <AlertTriangle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              No se encontraron interconsultas
-            </h3>
-            <p className="text-gray-600">
-              Intenta ajustar los filtros para ver más resultados
-            </p>
-            <button
-              onClick={limpiarFiltros}
-              className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
-            >
-              Limpiar Filtros
-            </button>
-          </div>
-        ) : (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
-            <AlertTriangle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              No hay interconsultas disponibles
-            </h3>
-            <p className="text-gray-600">
-              No se encontraron datos en la base de datos
-            </p>
+                );
+              })}
+            </div>
+            
+            <div className="mt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 text-sm text-gray-600">
+              <span>Total de interconsultas: <span className="font-semibold">{interconsultasData.length}</span></span>
+              {filtroEspecialidad && (
+                <span className="text-blue-600">
+                  Filtrando por: <span className="font-semibold">{filtroEspecialidad}</span>
+                </span>
+              )}
+            </div>
           </div>
         )}
+
+        {/* Filtros */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6 mb-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Filtros</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Especialidad Derivada
+              </label>
+              <select
+                value={filtroEspecialidad}
+                onChange={(e) => setFiltroEspecialidad(e.target.value)}
+                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900 appearance-none"
+                style={{ 
+                  backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e")`,
+                  backgroundPosition: 'right 0.5rem center',
+                  backgroundRepeat: 'no-repeat',
+                  backgroundSize: '1.5em 1.5em',
+                  paddingRight: '2.5rem'
+                }}
+              >
+                <option value="" className="text-gray-900">Todas las especialidades</option>
+                {especialidades.map(esp => (
+                  <option key={esp} value={esp} className="text-gray-900">{esp}</option>
+                ))}
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Código CIE-10
+              </label>
+              <select
+                value={filtroCIE10}
+                onChange={(e) => setFiltroCIE10(e.target.value)}
+                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900 appearance-none"
+                style={{ 
+                  backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e")`,
+                  backgroundPosition: 'right 0.5rem center',
+                  backgroundRepeat: 'no-repeat',
+                  backgroundSize: '1.5em 1.5em',
+                  paddingRight: '2.5rem'
+                }}
+              >
+                <option value="" className="text-gray-900">Todos los códigos</option>
+                {codigosCIE10.map(item => (
+                  <option key={item.codigo} value={item.codigo} className="text-gray-900">
+                    {item.codigo} - {item.descripcion}
+                  </option>
+                ))}
+              </select>
+            </div>
+            
+            <div className="flex items-end">
+              <button
+                onClick={limpiarFiltros}
+                className="cursor-pointer w-full md:w-auto px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors duration-150"
+              >
+                Limpiar Filtros
+              </button>
+            </div>
+          </div>
+          
+          <div className="mt-4 text-sm text-gray-600">
+            Mostrando {datosFiltrados.length} de {interconsultasData.length} interconsultas
+          </div>
+        </div>
+
+        {/* Lista de interconsultas */}
+        <div className="space-y-4">
+          {datosFiltrados.length > 0 ? (
+            datosFiltrados.map(interconsulta => (
+              <InterConsultaCard
+                key={interconsulta._id}
+                interconsulta={interconsulta}
+                isExpanded={expandedCards.has(interconsulta._id)}
+                onToggle={() => toggleCard(interconsulta._id)}
+              />
+            ))
+          ) : interconsultasData.length > 0 ? (
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
+              <AlertTriangle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                No se encontraron interconsultas
+              </h3>
+              <p className="text-gray-600 mb-4">
+                Intenta ajustar los filtros para ver más resultados
+              </p>
+              <button
+                onClick={limpiarFiltros}
+                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+              >
+                Limpiar Filtros
+              </button>
+            </div>
+          ) : (
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
+              <AlertTriangle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                No hay interconsultas disponibles
+              </h3>
+              <p className="text-gray-600">
+                No se encontraron datos en la base de datos
+              </p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
