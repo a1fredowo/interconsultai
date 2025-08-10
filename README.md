@@ -6,6 +6,10 @@ InterconsultAI es una aplicación web desarrollada para el UAI Hackathon 2025 qu
 
 El proyecto optimiza y automatiza la priorización de pacientes en listas de espera, transformando datos clínicos en texto libre en información estructurada para facilitar la toma de decisiones médicas y administrativas.
 
+## 🚀 Demo en Vivo
+
+La aplicación está desplegada y disponible en: **https://interconsultai.vercel.app/**
+
 ## Características Principales
 
 - **Formulario estandarizado** para captura de datos médicos
@@ -25,4 +29,5 @@ El proyecto optimiza y automatiza la priorización de pacientes en listas de esp
 - **Gemini** - Modelo de IA generativa de Google
 - **MongoDB** - Base de datos NoSQL
 - **Tailwind CSS** - Framework de CSS para diseño
+
 
