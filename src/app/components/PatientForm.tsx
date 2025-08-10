@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import PDFdownload from './PDFdownload';
 
 interface FormData {
   rut: string;
@@ -16,6 +17,9 @@ interface FormData {
 export default function InterconsultaForm() {
   const [logs, setLogs] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [interceptConsultaId, setInterceptConsultaId] = useState<string>("");
+
   const addLog = (message: string) => {
     setLogs(prev => [...prev, `${new Date().toLocaleTimeString()}: ${message}`]);
   };
@@ -30,6 +34,19 @@ export default function InterconsultaForm() {
     prioridad: "",
     observaciones: "",
   });
+
+  const resetForm = () => {
+    setFormData({
+      rut: "",
+      nombre: "",
+      edad: "",
+      sexo: "",
+      prevision: "",
+      diagnostico: "",
+      prioridad: "",
+      observaciones: "",
+    });
+  };
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -46,8 +63,8 @@ export default function InterconsultaForm() {
     setLoading(true);
     setLogs([]);
 
-    try{
-    addLog('📤 Enviando request...');
+    try {
+      addLog('📤 Enviando request...');
       
       const response = await fetch('/api/interconsultas/procesar', {
         method: 'POST',
@@ -63,20 +80,32 @@ export default function InterconsultaForm() {
       try {
         const data = JSON.parse(text);
         if (response.ok) {
-          addLog(`✅ Éxito! ID generado: ${data.data?.id_interconsulta || 'N/A'}`);
+          const consultaId = data.data?.id_interconsulta || 'N/A';
+          addLog(`✅ Éxito! ID generado: ${consultaId}`);
+          setInterceptConsultaId(consultaId);
+          setShowSuccessModal(true);
         } else {
           addLog(`❌ Error ${response.status}: ${data.error || text}`);
+          alert(`Error: ${data.error || 'Error desconocido'}`);
         }
       } catch (parseError) {
         addLog(`⚠️ Error parseando JSON: ${parseError.message}`);
         addLog(`📦 Contenido original: ${text}`);
+        alert('Error procesando la respuesta del servidor');
       }
 
     } catch (error: any) {
       addLog(`💥 Exception: ${error.message}`);
+      alert(`Error de conexión: ${error.message}`);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleModalClose = () => {
+    setShowSuccessModal(false);
+    resetForm();
+    setInterceptConsultaId("");
   };
 
   return (
@@ -303,14 +332,62 @@ export default function InterconsultaForm() {
             <div className="pt-8">
               <button
                 type="submit"
-                className="w-full bg-gradient-to-r from-slate-700 via-blue-700 to-indigo-700 text-white py-5 px-8 rounded-2xl hover:from-slate-800 hover:via-blue-800 hover:to-indigo-800 focus:ring-4 focus:ring-slate-300 transition-all duration-300 font-bold text-xl shadow-xl hover:shadow-2xl transform hover:scale-[1.02] uppercase tracking-wide"
+                disabled={loading}
+                className="w-full bg-gradient-to-r from-slate-700 via-blue-700 to-indigo-700 text-white py-5 px-8 rounded-2xl hover:from-slate-800 hover:via-blue-800 hover:to-indigo-800 focus:ring-4 focus:ring-slate-300 transition-all duration-300 font-bold text-xl shadow-xl hover:shadow-2xl transform hover:scale-[1.02] uppercase tracking-wide cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               >
-                Enviar Solicitud de Interconsulta
+                {loading ? "Enviando..." : "Enviar Solicitud de Interconsulta"}
               </button>
             </div>
           </form>
         </div>
       </div>
+
+      {/* Success Modal */}
+      {showSuccessModal && (
+        <div className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl max-w-lg w-full mx-4 transform transition-all border border-white/50">
+            <div className="p-8 text-center">
+              {/* Success Icon */}
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+              </div>
+              
+              {/* Success Message */}
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                ¡Solicitud Enviada Exitosamente!
+              </h3>
+              
+              <p className="text-gray-600 mb-2">
+                Su interconsulta ha sido registrada correctamente en el sistema.
+              </p>
+              
+              {interceptConsultaId && (
+                <p className="text-sm text-gray-500 mb-6">
+                  ID de referencia: <span className="font-mono font-semibold">{interceptConsultaId}</span>
+                </p>
+              )}
+              
+                {/* PDF Download Options */}
+                <div className="mb-6 flex flex-col items-center">
+                <p className="text-sm font-medium text-gray-700 mb-3">Descargar interconsulta en PDF:</p>
+                <div className="flex justify-center">
+                  <PDFdownload formData={formData} interceptConsultaId={interceptConsultaId} />
+                </div>
+                </div>
+              
+              {/* Close Button */}
+              <button
+                onClick={handleModalClose}
+                className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white py-3 px-6 rounded-xl hover:from-green-700 hover:to-green-800 focus:ring-4 focus:ring-green-300 transition-all duration-200 font-semibold cursor-pointer"
+              >
+                Continuar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
